@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ku">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ڕوودانAI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",Tahoma,sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b);color:#f1f5f9;line-height:1.6;min-height:100vh}
+header{background:rgba(15,23,42,.8);padding:25px 20px;text-align:center;border-bottom:1px solid #334155}
+header h1{font-size:2.2em;background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{color:#94a3b8;margin-top:5px}
+nav{background:rgba(30,41,59,.5);display:flex;justify-content:center;flex-wrap:wrap;padding:10px;gap:5px}
+nav button{background:transparent;color:#94a3b8;border:none;padding:10px 20px;cursor:pointer;font-size:14px;border-radius:6px;transition:all .3s}
+nav button:hover{color:#f1f5f9;background:rgba(99,102,241,.1)}
+nav button.active{color:white;background:linear-gradient(135deg,#6366f1,#ec4899)}
+main{max-width:1100px;margin:20px auto;padding:0 15px}
+.tab{display:none}
+.tab.active{display:block;animation:fadeIn .4s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.card{background:rgba(30,41,59,.6);border:1px solid #334155;border-radius:12px;padding:20px;margin-bottom:15px}
+.card h2{color:#f1f5f9;margin-bottom:15px;font-size:1.4em;border-right:4px solid #6366f1;padding-right:10px}
+textarea,select,input[type="text"],input[type="range"]{width:100%;padding:10px;background:rgba(15,23,42,.5);border:1px solid #334155;border-radius:6px;color:#f1f5f9;direction:rtl;margin:8px 0;font-family:inherit}
+textarea{min-height:80px;resize:vertical}
+label{display:block;margin:12px 0 6px;color:#94a3b8}
+.btn{background:linear-gradient(135deg,#6366f1,#ec4899);color:white;border:none;padding:12px 24px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-top:10px}
+.btn:hover{opacity:.9}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.info-box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);padding:12px;border-radius:8px;margin:12px 0;font-size:.9em}
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;margin-top:15px}
+.news-card{background:rgba(30,41,59,.6);border:1px solid #334155;border-radius:10px;padding:15px;transition:all .3s}
+.news-card:hover{transform:translateY(-3px);border-color:#6366f1}
+.news-card .cat{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.75em;font-weight:600;margin-bottom:8px}
+.cat-culture{background:rgba(236,72,153,.2);color:#f472b6}
+.cat-art{background:rgba(245,158,11,.2);color:#fbbf24}
+.cat-science{background:rgba(34,197,94,.2);color:#4ade80}
+.cat-literature{background:rgba(99,102,241,.2);color:#a5b4fc}
+.cat-ai{background:rgba(168,85,247,.2);color:#c084fc}
+.cat-tech{background:rgba(6,182,212,.2);color:#22d3ee}
+.news-card h3{font-size:1em;margin-bottom:8px}
+.news-card h3 a{color:#f1f5f9;text-decoration:none}
+.news-card h3 a:hover{color:#6366f1}
+.news-card .meta{font-size:.8em;color:#94a3b8;margin-top:8px}
+.filter-bar{background:rgba(30,41,59,.4);padding:12px;border-radius:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:15px}
+.filter-bar select,.filter-bar input{flex:1;min-width:150px}
+.loading{text-align:center;padding:30px;color:#94a3b8}
+.status-bar{display:flex;gap:10px;align-items:center;padding:10px 15px;background:rgba(15,23,42,.5);border-radius:8px;margin-bottom:15px;font-size:.9em}
+.status-dot{width:10px;height:10px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+.status-dot.error{background:#f87171;animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.refresh-btn{background:rgba(99,102,241,.2);border:1px solid #6366f1;color:#f1f5f9;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px}
+.refresh-btn:hover{background:#6366f1}
+.deploy-step{background:rgba(15,23,42,.5);border:1px solid #334155;border-radius:10px;padding:20px;margin-bottom:15px}
+.deploy-step h3{color:#6366f1;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.step-number{background:linear-gradient(135deg,#6366f1,#ec4899);color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.deploy-step ol{padding-right:20px;color:#94a3b8;line-height:2}
+.deploy-step a{color:#ec4899;text-decoration:none}
+.deploy-step a:hover{text-decoration:underline}
+.button-group{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px}
+.download-btn,.github-btn{background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:10px}
+.download-btn:hover,.github-btn:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(16,185,129,.3)}
+.github-btn{background:linear-gradient(135deg,#24292e,#40495a)}
+.github-btn:hover{box-shadow:0 5px 15px rgba(36,41,46,.4)}
+.github-icon{width:24px;height:24px}
+.video-output{margin-top:15px;background:rgba(15,23,42,.8);border:1px solid #334155;border-radius:10px;overflow:hidden;position:relative}
+.video-player{width:100%;aspect-ratio:16/9;background:#000;position:relative}
+.video-player img{width:100%;height:100%;object-fit:cover;position:absolute;opacity:0;transition:opacity 1s}
+.video-player img.active{opacity:1}
+.video-controls{padding:12px;background:rgba(15,23,42,.9);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctrl-btn{background:rgba(99,102,241,.2);border:1px solid #6366f1;color:#f1f5f9;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:13px}
+.ctrl-btn:hover{background:#6366f1}
+.watermark{position:absolute;bottom:10px;right:10px;background:linear-gradient(135deg,#6366f1,#ec4899);color:white;padding:4px 10px;border-radius:4px;font-size:.85em;font-weight:bold;z-index:5}
+.loading-overlay{position:absolute;inset:0;background:rgba(15,23,42,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10}
+.spinner{width:40px;height:40px;border:3px solid #334155;border-top-color:#6366f1;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{background:rgba(15,23,42,.8);text-align:center;padding:20px;margin-top:30px;color:#94a3b8;font-size:.9em}
+footer strong{background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge{display:inline-block;padding:3px 8px;border-radius:10px;font-size:.7em;font-weight:600;margin-right:5px}
+.badge-live{background:rgba(34,197,94,.2);color:#4ade80}
+@media(max-width:768px){header h1{font-size:1.8em}.news-grid{grid-template-columns:1fr}.button-group{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ڕوودانAI</h1>
+  <p>بزوێنەری هەواڵی کولتووری، هونەری، زانستی و ئەدەبی کوردی</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('news',this)">📰 هەواڵ</button>
+  <button onclick="showTab('video',this)">🎥 ڤیدیۆ</button>
+  <button onclick="showTab('deploy',this)">🚀 بڵاوکردنەوە</button>
+  <button onclick="showTab('about',this)">ℹ️ دەربارە</button>
+</nav>
+
+<main>
+
+<section id="news" class="tab active">
+  <div class="card">
+    <h2>هەواڵی کوردی <span class="badge badge-live">زیندوو</span></h2>
+    <div class="status-bar">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">پەیوەندی بە سەرچاوەکانەوە...</span>
+    </div>
+    <div class="filter-bar">
+      <select id="cat-filter" onchange="filterNews()">
+        <option value="all">هەموو</option>
+        <option value="culture">کولتوور</option>
+        <option value="art">هونەر</option>
+        <option value="science">زانست</option>
+        <option value="literature">ئەدەب</option>
+        <option value="ai">زیرەکی دەستکرد</option>
+        <option value="tech">تەکنەلۆجیا</option>
+      </select>
+      <input type="text" id="search" placeholder="🔍 گەڕان..." oninput="filterNews()">
+      <button class="refresh-btn" onclick="loadNews()">🔄 نوێکردنەوە</button>
+    </div>
+    <div id="news-grid" class="news-grid">
+      <div class="loading">هەواڵە ڕاستەقینەکان بار دەکرێن...</div>
+    </div>
+  </div>
+</section>
+
+<section id="video" class="tab">
+  <div class="card">
+    <h2>دروستکردنی ڤیدیۆ بە AI</h2>
+    <label>دەق (ئینگلیزی باشترە):</label>
+    <textarea id="txt" placeholder="A beautiful Kurdish garden with flowers, mountains, sunset"></textarea>
+    <label>ماوە: <strong id="val" style="color:#6366f1;">5</strong> چرکە</label>
+    <input type="range" id="dur" min="3" max="20" value="5">
+    <div class="info-box">💰 تا ٥ چرکە: بەخۆڕایی | هەر چرکەی زیاتر: $٠.٠٣</div>
+    <button class="btn" id="genBtn" onclick="makeVideo()">🎥 دروستکردنی ڤیدیۆ</button>
+    <div id="videoOut" class="video-output" style="display:none;">
+      <div class="loading-overlay" id="loadOvr">
+        <div class="spinner"></div>
+        <div id="loadTxt">AI خەریکە وێنەکان دروست دەکات...</div>
+      </div>
+      <div class="video-player" id="player"></div>
+      <div class="watermark">ڕوودانAI</div>
+      <div class="video-controls" id="ctrls" style="display:none;">
+        <button class="ctrl-btn" id="ppBtn" onclick="togglePlay()">⏸️</button>
+        <button class="ctrl-btn" onclick="restart()">🔄</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="deploy" class="tab">
+  <div class="card">
+    <h2>🚀 بڵاوکردنەوەی ماڵپەڕ</h2>
+    
+    <div class="deploy-step">
+      <h3><span class="step-number">١</span> ماڵپەڕەکەت دابەزێنە یان بینێرە بۆ GitHub</h3>
+      <p style="color:#94a3b8;margin-bottom:10px;">یەکێک هەڵبژێرە:</p>
+      <div class="button-group">
+        <button class="download-btn" onclick="downloadHTML()">💾 دابەزاندنی index.html</button>
+        <button class="github-btn" onclick="sendToGitHub()">
+          <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          ناردن بۆ GitHub
+        </button>
+      </div>
+    </div>
+    
+    <div class="deploy-step">
+      <h3><span class="step-number">٢</span> لە Netlify هاوستی بکە</h3>
+      <ol>
+        <li>بچۆ بۆ <a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a></li>
+        <li>فۆڵدەرەکەی تێدا <code>index.html</code> هەیە ڕاکێشە</li>
+        <li>لە ١٠ چرکەدا لینکێکت دەداتێ — هەموو کەسێک دەتوانێت بیکاتەوە</li>
+      </ol>
+    </div>
+    
+    <div class="deploy-step">
+      <h3><span class="step-number">٣</span> سیستەمی خۆکارانە (GitHub Actions + Telegram)</h3>
+      <p style="color:#94a3b8;margin-bottom:10px;">بۆ ئەوەی هەواڵەکان <strong>خۆکارانە</strong> کۆبکرێنەوە و بڵاو بکرێنەوە:</p>
+      <ol>
+        <li>لە <a href="https://github.com" target="_blank">GitHub</a> ئەکاونتێک دروست بکە</li>
+        <li>Repository ی نوێ دروست بکە: <code>rudanai</code></li>
+        <li>فایلی <code>index.html</code> و <code>.github/workflows/news-bot.yml</code> زیاد بکە</li>
+        <li>لە <a href="https://t.me/BotFather" target="_blank">Telegram</a> بۆتێک دروست بکە و Token وەربگرە</li>
+        <li>کەناڵی تێلەگرام دروست بکە: <code>@rudanai_news</code></li>
+        <li>لە GitHub Settings → Secrets → Actions:
+          <ul style="padding-right:20px;margin-top:5px;">
+            <li><code>TELEGRAM_BOT_TOKEN</code> = tokenەکەت</li>
+            <li><code>TELEGRAM_CHANNEL_ID</code> = <code>@rudanai_news</code></li>
+          </ul>
+        </li>
+        <li>هەر ٣٠ خولەک جارێک، هەواڵەکان خۆکارانە بڵاو دەبنەوە!</li>
+      </ol>
+    </div>
+    
+    <div class="info-box">💡 هەموو ئەمانە بەخۆڕایی و بەبێ کارتی بانکن.</div>
+  </div>
+</section>
+
+<section id="about" class="tab">
+  <div class="card">
+    <h2>دەربارەی ڕوودانAI</h2>
+    <p style="color:#94a3b8;line-height:1.8;margin-bottom:15px;">
+      <strong style="color:#f1f5f9;">ڕوودانAI</strong> بزوێنەرێکی کوردییە بۆ کۆکردنەوە و بڵاوکردنەوەی هەواڵی کولتووری، هونەری، زانستی، ئەدەبی، و تەکنەلۆجیای کوردی.
+    </p>
+    <h3 style="color:#6366f1;margin:20px 0 10px;">تایبەتمەندییەکان:</h3>
+    <ul style="padding-right:25px;color:#94a3b8;line-height:2;">
+      <li>کۆکردنەوەی خۆکارانەی هەواڵ لە Rudaw, BBC Kurdish, Kurdistan24</li>
+      <li>پاڵاوتنی خۆکارانەی هەواڵی سیاسەت</li>
+      <li>پۆلێنکردن: کولتوور، هونەر، زانست، ئەدەب، AI، تەکنەلۆجیا</li>
+      <li>دروستکردنی ڤیدیۆی ڕاستەقینە بە Pollinations AI</li>
+      <li>سیستەمی خۆکارانە بۆ بڵاوکردنەوە لە تێلەگرام</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>© ٢٠٢٦ <strong>ڕوودانAI</strong> — بۆ کورد، لەلایەن کورد</p>
+</footer>
+
+<script>
+function showTab(id,btn){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}
+
+function downloadHTML(){const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;const blob=new Blob([html],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='index.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);alert('✅ فایلی index.html دابەزرا!')}
+
+function sendToGitHub(){const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;const encoded=encodeURIComponent(html);const gistUrl='https://gist.github.com/?content='+encoded;window.open(gistUrl,'_blank');alert('✅ کۆدەکە کۆپی کرا!\n\nGitHub دەکرێتەوە — فایلی نوێ دروست بکە و کۆدەکە پەیست بکە.')}
+
+function categorize(t,d){const x=(t+' '+(d||'')).toLowerCase();if(/هونەر|مۆسیقا|شانۆ|سینەما|وێنە|نەقاشی|فیلم|art|music|cinema/.test(x))return'art';if(/زانست|توێژینەوە|زانکۆ|دکتۆر|تەندروستی|science|research/.test(x))return'science';if(/ئەدەب|شیعر|ڕۆمان|نووسەر|کتێب|چیرۆک|poetry|novel|book/.test(x))return'literature';if(/زیرەکی دەستکرد|AI|ChatGPT|machine learning/.test(x))return'ai';if(/تەکنەلۆجیا|ئینتەرنێت|مۆبایل|ئەپ|technology|digital|app/.test(x))return'tech';return'culture'}
+
+function isPolitical(t,d){const x=(t+' '+(d||'')).toLowerCase();const k=['سیاسی','سیاسەت','حکومەت','پەرلەمان','هەڵبژاردن','پارتی','یەکێتی','سەرۆک','وەزیر','government','parliament','election','president','minister','political','party'];return k.some(w=>x.includes(w))}
+
+function getCatName(c){return{culture:'کولتوور',art:'هونەر',science:'زانست',literature:'ئەدەب',ai:'زیرەکی دەستکرد',tech:'تەکنەلۆجیا'}[c]||'کولتوور'}
+
+function stripHtml(h){const d=document.createElement('div');d.innerHTML=h||'';return d.textContent||d.innerText||''}
+
+let allNews=[];
+
+async function loadNews(){const grid=document.getElementById('news-grid');const dot=document.getElementById('statusDot');const txt=document.getElementById('statusText');grid.innerHTML='<div class="loading">هەواڵە ڕاستەقینەکان بار دەکرێن...</div>';dot.classList.remove('error');txt.textContent='پەیوەندی بە سەرچاوەکانەوە...';allNews=[];const feeds=[{name:'Rudaw',url:'https://www.rudaw.net/kurdi/rss'},{name:'BBC کوردی',url:'https://feeds.bbci.co.uk/kurdish/rss.xml'},{name:'Kurdistan24',url:'https://www.kurdistan24.net/kurdi/rss'}];for(const f of feeds){try{const r=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url)+'&count=20');const d=await r.json();if(d.status!=='ok'||!d.items)continue;d.items.forEach(i=>{const t=i.title||'';const desc=stripHtml(i.description||i.content||'');const l=i.link||'#';const p=i.pubDate||'';if(!t||isPolitical(t,desc))return;allNews.push({title:t,desc,link:l,date:p?new Date(p):new Date(),category:categorize(t,desc),source:f.name})})}catch(e){console.log('هەڵە لە '+f.name)}}if(allNews.length===0){dot.classList.add('error');txt.textContent='هەواڵ بار نەکرا';grid.innerHTML='<div style="text-align:center;padding:50px 20px;color:#94a3b8;grid-column:1/-1;"><div style="font-size:60px;margin-bottom:15px;">📡</div><h3 style="color:#f1f5f9;margin-bottom:10px;">نەتوانرا هەواڵ بهێنرێت</h3><p>تکایە پەیوەندی ئینتەرنێتت بپشکنە.</p><button class="refresh-btn" onclick="loadNews()" style="margin-top:15px;">🔄 هەوڵی دووبارە</button></div>';return}dot.classList.remove('error');txt.textContent='✅ '+allNews.length+' هەواڵی ڕاستەقینە بارکرا';allNews.sort((a,b)=>b.date-a.date);renderNews(allNews)}
+
+function renderNews(list){const grid=document.getElementById('news-grid');if(list.length===0){grid.innerHTML='<div class="loading">هیچ هەواڵێک نەدۆزرایەوە.</div>';return}grid.innerHTML=list.slice(0,30).map(i=>'<div class="news-card"><span class="cat cat-'+i.category+'">'+getCatName(i.category)+'</span><h3><a href="'+i.link+'" target="_blank" rel="noopener">'+i.title+'</a></h3>'+(i.desc?'<div style="font-size:.85em;color:#94a3b8;margin-top:8px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">'+i.desc+'</div>':'')+'<div class="meta">'+i.source+' — '+new Date(i.date).toLocaleDateString('ku')+'</div></div>').join('')}
+
+function filterNews(){const c=document.getElementById('cat-filter').value;const s=document.getElementById('search').value.toLowerCase();let f=allNews;if(c!=='all')f=f.filter(i=>i.category===c);if(s)f=f.filter(i=>i.title.toLowerCase().includes(s));renderNews(f)}
+
+let frames=[],curFrame=0,playing=false,interval=null;
+document.getElementById('dur').oninput=function(){document.getElementById('val').textContent=this.value};
+
+async function makeVideo(){const p=document.getElementById('txt').value.trim();const d=parseInt(document.getElementById('dur').value);const out=document.getElementById('videoOut');const btn=document.getElementById('genBtn');if(!p){alert('تکایە دەقێک بنووسە');return}out.style.display='block';document.getElementById('loadOvr').style.display='flex';document.getElementById('ctrls').style.display='none';document.getElementById('player').innerHTML='';btn.disabled=true;btn.textContent='⏳ خەریکە دروست دەکرێت...';frames=[];curFrame=0;for(let i=0;i<d;i++){document.getElementById('loadTxt').textContent='وێنە '+(i+1)+' لە '+d+'...';const pr=p+', frame '+(i+1)+', cinematic, time progression '+Math.round((i/d)*100)+'%';const u='https://image.pollinations.ai/prompt/'+encodeURIComponent(pr)+'?width=1024&height=576&seed='+(i*100)+'&nologo=true';try{await new Promise((res,rej)=>{const img=new Image();img.onload=()=>{frames.push(u);res()};img.onerror=rej;img.src=u})}catch(e){console.log('هەڵە لە فرێمی '+(i+1))}}document.getElementById('loadOvr').style.display='none';document.getElementById('ctrls').style.display='flex';btn.disabled=false;btn.textContent='🎥 دروستکردنی ڤیدیۆ';document.getElementById('player').innerHTML=frames.map((u,i)=>'<img src="'+u+'" class="'+(i===0?'active':'')+'">').join('');startPlay()}
+
+function startPlay(){playing=true;document.getElementById('ppBtn').textContent='⏸️';interval=setInterval(()=>{curFrame=(curFrame+1)%frames.length;document.querySelectorAll('#player img').forEach((img,i)=>{img.classList.toggle('active',i===curFrame)})},1000)}
+
+function togglePlay(){if(playing){clearInterval(interval);playing=false;document.getElementById('ppBtn').textContent='▶️'}else{startPlay()}}
+
+function restart(){clearInterval(interval);curFrame=0;document.querySelectorAll('#player img').forEach((img,i)=>{img.classList.toggle('active',i===0)});startPlay()}
+
+loadNews();
+</script>
+
+</body>
+</html>
